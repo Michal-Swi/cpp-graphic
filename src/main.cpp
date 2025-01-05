@@ -1,29 +1,30 @@
-#include <map>
-#include <optional>
+#include <cerrno>
 #include <raylib.h>
-#include <iostream>
-#include <vector>
-#include "./ball.h"
+#include "lib/loader.h"
 
 int main() {
-	InitWindow(1920, 1080, "test");
-	SetTargetFPS(60);
+	InitWindow(1920, 1080, "Gra");
 
-	::entities entities;
-	
-	auto ball = new Ball;
-	ball->load();
-	entities.push_back(ball);
+	const int fps = 60;
+	SetTargetFPS(fps);
+
+	Loader loader;
+	::entities entities = loader.load_entities();
 
 	Game game;
 	game.start(entities);
 
-	while (true) {
-		if (IsKeyPressed(KEY_ESCAPE)) {
+	float delta_time;
+	while (!WindowShouldClose()) {
+		if (IsKeyPressed(KEY_ESCAPE) or 
+				IsKeyDown(KEY_ESCAPE)) {
 			return 0;
 		}
 
-		game.update();
+		delta_time = GetFrameTime();
+		
+		game.update(delta_time);
+		game.draw();
 	}
 
 	return 0;
