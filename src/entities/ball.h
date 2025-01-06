@@ -1,11 +1,17 @@
-#include "rectangle.h"
+#include "point.h"
 #include <iostream>
 #include <raylib.h>
+
+enum VeritcalDirection {
+	up,
+	down,
+	straight
+};
 
 class Ball : public Entity { 
 	private:
 	float x = 400, y = 0;
-	float speed = 700;
+	float speed = 800;
 
 	public:
 	float get_x() override {
@@ -26,6 +32,14 @@ class Ball : public Entity {
 		return rec;
 	}
 
+	private:
+	Points points;
+
+	public:
+	void load_points(Player *&player1, Player *&player2) {
+		points.set_players(player1, player2);
+	}
+
 	public:
 	void load(Texture2D &texture) override {
 		this->texture = texture;
@@ -39,8 +53,15 @@ class Ball : public Entity {
 	
 	private:
 	bool forward = true;
+	VeritcalDirection veritcal_direction = up;	
 	bool collides = false;
-	Rectangle collision_rec;
+	Vector2 collision_point;
+
+	public:
+	void set_collision_point(Vector2 &collision_point) 
+		override {
+		this->collision_point = collision_point;
+	}
 
 	public:
 	void set_collides(const bool &collides) override {
@@ -58,6 +79,41 @@ class Ball : public Entity {
 		} else if (!forward) {
 			x -= speed * delta_time;
 		}
+		
+		switch (veritcal_direction) {
+			case up:
+				y += 10;
+				break;
+			case down:
+				y -= 10;
+				break;
+			case straight:
+				break;
+		}
+
+		if (y < 0) {
+			y = 1;
+			veritcal_direction = up;
+		} else if (y + rec.height >= GetScreenHeight()) {
+			y = GetScreenHeight() - rec.height;
+			veritcal_direction = down;
+		}
+
+		if (x > 0 and x < GetScreenWidth()) {
+			return;
+		}
+		
+		int half_width = GetScreenWidth() / 2;
+
+		if (x < half_width) {
+			points.add_point(2);
+		}
+
+		if (x > half_width) {
+			points.add_point(1);
+		}
+
+		x = half_width;
 	}
 
 	public:

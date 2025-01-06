@@ -44,16 +44,19 @@ class Loader {
 	public:
 	entities load_entities() {
 		Ball *ball = new Ball;
-		std::string path = "../files/circle.png";
+		std::string path = "../files/white_circle.png";
 		ball = load_ball(path);
 
 		Player *player1 = new Player,
 			   *player2 = new Player;
-		path = "../files/thinner_white_rectangle.png";
+		path = "../files/thinner_white_rectangle_20px.png";
 		player1 = load_player(path);
 		player2 = load_player(path);
 
-		player2->set_x(GetScreenWidth() - texture.width);
+		player2->set_x(GetScreenWidth() - texture.width - 50);
+		player1->set_x(50);
+
+		ball->load_points(player1, player2);
 
 		Collision *collision = new Collision;
 		collision->add_event_listener(ball);

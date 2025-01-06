@@ -27,16 +27,16 @@ class Entity {
 	float get_x() {
 		return 0;
 	}
-
-	public:
-	virtual
-	void set_collision_rec(const Rectangle &collision_rec) {
-		return;
-	}
  
 	public:
 	virtual
 	void update(float &delta_time) {
+		return;
+	}
+
+	public:
+	virtual
+	void set_collision_point(Vector2 &collision_point) {
 		return;
 	}
 

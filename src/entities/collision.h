@@ -1,4 +1,6 @@
 #include "ball.h"
+#include <cstddef>
+#include <optional>
 #include <algorithm>
 #include <cmath>
 #include <raylib.h>
@@ -22,22 +24,32 @@ class Collision : public Entity {
 		collision_entities.push_back(entity);
 	}
 
-	bool check_collision(circle& circle, Rectangle& rect) {
-		float closestX = 
+	std::optional<Vector2>
+		check_collision(circle& circle, Rectangle& rect) {
+		float closest_x = 
 			std::clamp(circle.x, 
 					rect.x - rect.width / 2.0f,
 					rect.x + rect.width / 2.0f);
-		float closestY = 
+		float closest_y =  
 			std::clamp(circle.y,
 					rect.y - rect.height / 2.0f,
 					rect.y + rect.height / 2.0f);
 
 	    float distanceSquared = 
-			(circle.x - closestX) * (circle.x - closestX) +
-	        (circle.y - closestY) * (circle.y - closestY);
+			(circle.x - closest_x) * (circle.x - closest_x) 
+			+
+	        (circle.y - closest_y) * (circle.y - closest_y);
 
-		return distanceSquared <= 
+		bool collision =
+			distanceSquared <=
 			(circle.radius * circle.radius);
+
+		Vector2 vec = {closest_x, closest_y};
+		if (collision) {
+			return vec;
+		}
+
+		return std::nullopt;
 	}
 	
 	public:
@@ -72,12 +84,18 @@ class Collision : public Entity {
 				rec1.x = x + rec1.width / 2;
 				rec1.y = y + rec1.height / 2;
 
-				bool collision =
-					check_collision(circle, rec1); 
+				std::optional<Vector2> result = 
+					check_collision(circle, rec1);
+
+				bool collision = result.has_value();
 
 				if (collision) {
+					Vector2 collision_point = result.value();
 					was_collision = true;
-					collision_entity->set_collides(true);
+					collision_entity->
+						set_collision_point(collision_point);
+					collision_entity->
+						set_collides(true);
 				}
 			}
 

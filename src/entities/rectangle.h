@@ -1,5 +1,6 @@
 #include "../lib/game.h"
 #include <raylib.h>
+#include <raymath.h>
 
 class Player : public Entity {
 	private:
@@ -45,14 +46,39 @@ class Player : public Entity {
 		};
 	}
 
+	private:
+	int points = 0;
+
+	public:
+	void add_point() {
+		points++;
+	}
+
 	public: 
 	void update(float &delta_time) override {
-		y = GetMouseY();
+		float smoothnes = 0.6;
+		y = Lerp(y, GetMouseY(), smoothnes);
+
+		if (y < 0) {
+			y = 1;
+		} else if (y + rec.height >= GetScreenHeight()) {
+			y = GetScreenHeight() - rec.height;
+		}
 	}
 
 	public:
 	void draw() override {
 		DrawTextureRec(texture, rec, {x, y}, WHITE);	
+		
+		bool substract = (x < GetScreenWidth() / 2);
+		int pos_offset = substract ? -150 : 150;
+		int offset = 50;
+
+		DrawText(std::to_string(points).c_str(), 
+				GetScreenWidth() / 2 + pos_offset,
+				offset,
+				offset, 
+				WHITE);
 	}
 };
 
