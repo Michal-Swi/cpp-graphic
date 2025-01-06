@@ -18,6 +18,18 @@ class Entity {
 
 	public:
 	virtual
+	float get_y() {
+		return 0;
+	}
+
+	public:
+	virtual
+	float get_x() {
+		return 0;
+	}
+
+	public:
+	virtual
 	void set_collision_rec(const Rectangle &collision_rec) {
 		return;
 	}

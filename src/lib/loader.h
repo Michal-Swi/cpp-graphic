@@ -56,7 +56,7 @@ class Loader {
 		player2->set_x(GetScreenWidth() - texture.width);
 
 		Collision *collision = new Collision;
-		collision->add_event_listent(ball);
+		collision->add_event_listener(ball);
 
 		entities entities;
 		entities.push_back(ball);

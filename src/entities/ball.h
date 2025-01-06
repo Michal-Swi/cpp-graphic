@@ -4,8 +4,18 @@
 
 class Ball : public Entity { 
 	private:
-	float x = 0, y = 0;
+	float x = 400, y = 0;
 	float speed = 700;
+
+	public:
+	float get_x() override {
+		return x;
+	}
+	
+	public:
+	float get_y() override {
+		return y;
+	}
 
 	private:
 	Texture2D texture;
@@ -37,16 +47,10 @@ class Ball : public Entity {
 		this->collides = collides;
 	}
 
-	public:
-	void set_collision_rec(const Rectangle &collision_rec) 
-		override {
-		this->collision_rec = collision_rec;
-	}
-
 	public: 
 	void update(float &delta_time) override {
 		if (collides) {
-			y += 10;
+			forward = !forward;
 		}
 
 		if (forward) {
@@ -54,19 +58,11 @@ class Ball : public Entity {
 		} else if (!forward) {
 			x -= speed * delta_time;
 		}
-
-		if (x <= 0) {
-			forward = true; 
-		} else if (x >= GetScreenWidth() - rec.width) {
-			forward = false;
-		}
-
-		rec.x = x;
 	}
 
 	public:
 	void draw() override {
-		DrawRectangle(x, y, rec.width, rec.height, WHITE);
+		DrawTextureRec(texture, rec, {x, y}, WHITE);
 	}
 };
 
