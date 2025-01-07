@@ -1,6 +1,8 @@
 #include "point.h"
+#include <cstdlib>
 #include <iostream>
 #include <raylib.h>
+#include <vector>
 
 enum VeritcalDirection {
 	up,
@@ -11,7 +13,7 @@ enum VeritcalDirection {
 class Ball : public Entity { 
 	private:
 	float x = 400, y = 0;
-	float speed = 800;
+	float speed = 500;
 
 	public:
 	float get_x() override {
@@ -40,6 +42,10 @@ class Ball : public Entity {
 		points.set_players(player1, player2);
 	}
 
+	private:
+	std::vector<Color> colors;
+	Color current_color = WHITE;
+
 	public:
 	void load(Texture2D &texture) override {
 		this->texture = texture;
@@ -49,6 +55,19 @@ class Ball : public Entity {
 			float(texture.width),
 			float(texture.height)
 		};
+
+		colors = {
+				WHITE,
+				BLUE,
+				RED,
+				ORANGE,
+				PINK,
+				GREEN,
+				MAGENTA,
+				RAYWHITE,
+				YELLOW,
+				SKYBLUE,
+				GOLD};
 	}
 	
 	private:
@@ -56,6 +75,12 @@ class Ball : public Entity {
 	VeritcalDirection veritcal_direction = up;	
 	bool collides = false;
 	Vector2 collision_point;
+	Rectangle collision_rectangle;
+
+	public:
+	void set_collision_rectangle(Rectangle &collision_rectangle) override {
+		this->collision_rectangle = collision_rectangle;
+	}
 
 	public:
 	void set_collision_point(Vector2 &collision_point) 
@@ -68,24 +93,61 @@ class Ball : public Entity {
 		this->collides = collides;
 	}
 
+	private:
+	float force = 1;
+
+	private:
+	void recalculate_force() {
+		float temp = std::abs
+			(collision_rectangle.y - collision_point.y);
+		temp /= (collision_rectangle.y) / 4;
+
+		force = 1 + temp;
+	}
+
+	private:
+	void calculate_direction() {
+		if (collision_point.y > collision_rectangle.y) {
+			veritcal_direction = up;
+			return;
+		}
+
+		veritcal_direction = down;
+	}
+
+	private:
+	// This assumes that collision had happened
+	bool is_inside_collision_rec() {
+		bool screen_side = x < GetScreenWidth() / 2;
+		
+		int val;
+		if (screen_side) {
+		}
+	}
+
 	public: 
 	void update(float &delta_time) override {
 		if (collides) {
 			forward = !forward;
+			recalculate_force();
+			calculate_direction();
+
+			int index = GetRandomValue(0, 9);
+			current_color = colors[index];
 		}
 
 		if (forward) {
-			x += speed * delta_time;
+			x += speed * delta_time * force;
 		} else if (!forward) {
-			x -= speed * delta_time;
+			x -= speed * delta_time * force;
 		}
 		
 		switch (veritcal_direction) {
 			case up:
-				y += 10;
+				y += 5 * force;
 				break;
 			case down:
-				y -= 10;
+				y -= 5 * force;
 				break;
 			case straight:
 				break;
@@ -102,6 +164,9 @@ class Ball : public Entity {
 		if (x > 0 and x < GetScreenWidth()) {
 			return;
 		}
+
+		force = 1;
+		forward = !forward;
 		
 		int half_width = GetScreenWidth() / 2;
 
@@ -118,7 +183,7 @@ class Ball : public Entity {
 
 	public:
 	void draw() override {
-		DrawTextureRec(texture, rec, {x, y}, WHITE);
+		DrawTextureRec(texture, rec, {x, y}, current_color);
 	}
 };
 

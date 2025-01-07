@@ -18,6 +18,12 @@ class Entity {
 
 	public:
 	virtual
+	void set_collision_rectangle(Rectangle &rec) {
+		return;
+	}
+
+	public:
+	virtual
 	float get_y() {
 		return 0;
 	}

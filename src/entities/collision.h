@@ -96,6 +96,8 @@ class Collision : public Entity {
 						set_collision_point(collision_point);
 					collision_entity->
 						set_collides(true);
+					collision_entity->
+						set_collision_rectangle(rec1);
 				}
 			}
 
