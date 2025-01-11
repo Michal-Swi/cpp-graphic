@@ -53,9 +53,32 @@ class Player : public Entity {
 	void add_point() {
 		points++;
 	}
+	
+	enum ScreenSide {
+		left, right
+	};
+
+	private:
+	ScreenSide get_screen_side(const float &x_pos) {
+		if (x_pos < GetScreenWidth() / 2) {
+			return ScreenSide::left;
+		}
+
+		return ScreenSide::right;
+	}
 
 	public: 
 	void update(float &delta_time) override {
+		ScreenSide mouse_screen_side = 
+			get_screen_side(GetMouseX());
+
+		ScreenSide rec_screen_side = 
+			get_screen_side(x);
+
+		if (mouse_screen_side != rec_screen_side) {
+			return;
+		}
+
 		float smoothnes = 0.6;
 		y = Lerp(y, GetMouseY(), smoothnes);
 

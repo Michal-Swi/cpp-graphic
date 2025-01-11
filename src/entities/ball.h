@@ -100,7 +100,7 @@ class Ball : public Entity {
 	void recalculate_force() {
 		float temp = std::abs
 			(collision_rectangle.y - collision_point.y);
-		temp /= (collision_rectangle.y) / 4;
+		temp /= (collision_rectangle.y) / 5;
 
 		force = 1 + temp;
 	}
@@ -120,15 +120,13 @@ class Ball : public Entity {
 	bool is_inside_collision_rec() {
 		bool screen_side = x < GetScreenWidth() / 2;
 		
-		int val;
-		if (screen_side) {
-		}
+		return screen_side;	
 	}
 
 	public: 
 	void update(float &delta_time) override {
 		if (collides) {
-			forward = !forward;
+			forward = is_inside_collision_rec();
 			recalculate_force();
 			calculate_direction();
 
@@ -179,6 +177,7 @@ class Ball : public Entity {
 		}
 
 		x = half_width;
+		y = GetRandomValue(10, 1000);
 	}
 
 	public:
